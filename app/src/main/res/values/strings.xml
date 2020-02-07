@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SnakeAndroid</string>
+    <string name="snake">SNAKE</string>
+    <string name="upSign">Λ</string>
+    <string name="downSign">V</string>
+    <string name="rightSign"><![CDATA[>]]></string>
+    <string name="leftSign"><![CDATA[<]]></string>
+</resources>
