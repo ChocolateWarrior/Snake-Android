@@ -2,7 +2,6 @@ package com.epam.snakeandroid.entities;
 
 import android.os.Build;
 import androidx.annotation.RequiresApi;
-
 import java.util.Objects;
 
 public class Node {
@@ -43,23 +42,12 @@ public class Node {
         return xCoordinate;
     }
 
-    public void setXCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
     public int getYCoordinate() {
         return yCoordinate;
-    }
-
-    public void setYCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
     }
 
     public Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
 }

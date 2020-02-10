@@ -10,8 +10,4 @@ public class Soul {
     public Node getPosition() {
         return position;
     }
-
-    public void setPosition(Node position) {
-        this.position = position;
-    }
 }

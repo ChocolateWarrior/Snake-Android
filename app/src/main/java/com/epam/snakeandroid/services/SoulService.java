@@ -1,7 +1,6 @@
 package com.epam.snakeandroid.services;
 
 import com.epam.snakeandroid.entities.*;
-
 import java.util.Random;
 
 public class SoulService {
@@ -32,8 +31,8 @@ public class SoulService {
 
     private Soul randomizeSoul() {
         return new Soul(
-                new Node(random.nextInt(field.getSize()),
-                        random.nextInt(field.getSize()),
+                new Node(random.nextInt(field.getSizeX()),
+                        random.nextInt(field.getSizeY()),
                         Direction.RIGHT));
     }
 

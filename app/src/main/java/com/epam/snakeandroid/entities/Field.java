@@ -5,29 +5,23 @@ import java.util.List;
 
 public class Field {
 
-    private int size;
+    private int sizeX;
+    private int sizeY;
     private List<Node> nodeField;
     private Soul soul;
 
-    public Field(int size) {
-        this.size = size;
-        nodeField = new ArrayList<>(size);
+    public Field(int sizeX, int sizeY) {
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.nodeField = new ArrayList<>(sizeX * sizeY);
     }
 
-    public int getSize() {
-        return size;
+    public int getSizeX() {
+        return sizeX;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public List<Node> getNodeField() {
-        return nodeField;
-    }
-
-    public void setNodeField(List<Node> nodeField) {
-        this.nodeField = nodeField;
+    public int getSizeY() {
+        return sizeY;
     }
 
     public Soul getSoul() {
@@ -36,5 +30,15 @@ public class Field {
 
     public void setSoul(Soul soul) {
         this.soul = soul;
+    }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "sizeX=" + sizeX +
+                ", sizeY=" + sizeY +
+                ", nodeField=" + nodeField +
+                ", soul=" + soul +
+                '}';
     }
 }
