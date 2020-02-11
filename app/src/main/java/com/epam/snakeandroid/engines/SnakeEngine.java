@@ -1,12 +1,8 @@
 package com.epam.snakeandroid.engines;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
+import android.graphics.*;
 import android.media.SoundPool;
 import android.os.Build;
 import android.view.MotionEvent;
@@ -18,27 +14,33 @@ import com.epam.snakeandroid.entities.*;
 import com.epam.snakeandroid.services.GameService;
 import com.epam.snakeandroid.services.SnakeService;
 import com.epam.snakeandroid.services.SoulService;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class SnakeEngine extends SurfaceView implements Runnable {
 
+    private static final String IMG_PUFFERFISH_PNG = "img/Pufferfish.png";
+    private static final String IMG_CARROT_PNG = "img/IconCarrot.png";
+    private static final String IMG_POWDER_PNG = "img/Powder.png";
+
     private Thread thread = null;
+    private InputStream inputStream;
     private SoundPool soundPool;
-    private int crashSound = -1;
-    private int eatSoulSound = -1;
     private Direction direction = Direction.RIGHT;
 
+    private final int NUM_BLOCKS_WIDE = 20;
     private int screenX;
     private int screenY;
     private int numBlocksHigh;
-    private final int NUM_BLOCKS_WIDE = 20;
     private int blockSize;
 
-    private long nextFrameTime;
     private final long FPS = 10;
     private final long MILLIS_PER_SECOND = 1000;
+    private long nextFrameTime;
 
     private volatile boolean isPlaying;
     private Canvas canvas;
@@ -66,28 +68,13 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         field = new Field(NUM_BLOCKS_WIDE, numBlocksHigh);
 
         soundPool = new SoundPool.Builder().setMaxStreams(10).build();
-
-//        try {
-//            AssetManager assetManager = context.getAssets();
-//            AssetFileDescriptor descriptor;
-//
-//            descriptor = assetManager.openFd("get_mouse_sound.ogg");
-//            eatSoulSound = soundPool.load(descriptor, 0);
-//
-//            descriptor = assetManager.openFd("death_sound.ogg");
-//            crashSound = soundPool.load(descriptor, 0);
-//
-//        } catch (IOException e) {
-//            System.out.println("No sound available ");
-//        }
-
         paint = new Paint();
         snake = new Snake();
         random = new Random();
         surfaceHolder = getHolder();
 
         soulService = new SoulService(random, field, snake);
-        snakeService = new SnakeService(soulService, field, snake);
+        snakeService = new SnakeService(soulService, soundPool, getContext(), field, snake);
         gameService = new GameService(snakeService, soulService);
 
         startNewGame();
@@ -133,10 +120,11 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void restart() {
         snake = new Snake();
         soulService = new SoulService(random, field, snake);
-        snakeService = new SnakeService(soulService, field, snake);
+        snakeService = new SnakeService(soulService, soundPool, getContext(), field, snake);
         gameService = new GameService(snakeService, soulService);
     }
 
@@ -144,14 +132,12 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     private void draw() {
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
-            //BACKGROUND COLOR
             canvas.drawColor(Color.parseColor("#ffdd99"));
 
             drawSnake();
             drawSoul();
             drawText();
 
-            // Unlock the canvas and reveal the graphics for this frame
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -165,41 +151,53 @@ public class SnakeEngine extends SurfaceView implements Runnable {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void drawSoul() {
-        paint.setColor(Color.parseColor("#76EA76"));
+        Bitmap carrotBitmap = getBitmapByFileName(IMG_CARROT_PNG);
+
         Soul soul = field.getSoul();
-        canvas.drawOval(soul.getPosition().getXCoordinate() * blockSize,
+        Rect soulRect = new Rect(soul.getPosition().getXCoordinate() * blockSize,
                 (soul.getPosition().getYCoordinate() * blockSize),
                 (soul.getPosition().getXCoordinate() * blockSize) + blockSize,
-                (soul.getPosition().getYCoordinate() * blockSize) + blockSize,
-                paint);
+                (soul.getPosition().getYCoordinate() * blockSize) + blockSize);
+
+        canvas.drawBitmap(carrotBitmap, null, soulRect, null);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void drawSnake() {
 
-        paint.setColor(Color.parseColor("#ff2e63"));
-        ArrayList snakeBody = new ArrayList(Arrays
+        ArrayList snakeBody = new ArrayList<>(Arrays
                 .asList(snakeService.getSnake().getSnakeBody().toArray()));
+
+        Bitmap snakeHeadBitmap = getBitmapByFileName(IMG_PUFFERFISH_PNG);
+        Bitmap snakeBodyBitmap = getBitmapByFileName(IMG_POWDER_PNG);
 
         for (int i = 0; i < snake.getSize(); i++) {
             Node current = (Node) snakeBody.get(i);
+            Rect currentRect = new Rect(current.getXCoordinate() * blockSize,
+                    current.getYCoordinate() * blockSize,
+                    (current.getXCoordinate() * blockSize) + blockSize,
+                    (current.getYCoordinate() * blockSize) + blockSize);
             if (snake.getHead().equals(current)) {
-                canvas.drawOval(current.getXCoordinate() * blockSize,
-                        current.getYCoordinate() * blockSize,
-                        (current.getXCoordinate() * blockSize) + blockSize,
-                        (current.getYCoordinate() * blockSize) + blockSize,
-                        paint);
+                canvas.drawBitmap(snakeHeadBitmap, null, currentRect, null);
             } else {
-                paint.setColor(Color.parseColor("#ffb6b9"));
-                canvas.drawRoundRect(current.getXCoordinate() * blockSize,
-                        current.getYCoordinate() * blockSize,
-                        (current.getXCoordinate() * blockSize) + blockSize,
-                        (current.getYCoordinate() * blockSize) + blockSize,
-                        35, 35, paint);
+                canvas.drawBitmap(snakeBodyBitmap, null, currentRect, null);
             }
         }
     }
 
+    private Bitmap getBitmapByFileName(String filename) {
+
+        Bitmap snakeHeadBitmap = null;
+        AssetManager assetManager = getContext().getAssets();
+        try {
+            inputStream = assetManager.open(filename);
+            snakeHeadBitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return snakeHeadBitmap;
+    }
 
     private boolean updateRequired() {
         if (nextFrameTime <= System.currentTimeMillis()) {
@@ -212,40 +210,37 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 
-        if ((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-            if (motionEvent.getX() >= screenX / 2f) {
-                switch (direction) {
-                    case UP:
-                        direction = Direction.RIGHT;
-                        break;
-                    case RIGHT:
-                        direction = Direction.DOWN;
-                        break;
-                    case DOWN:
-                        direction = Direction.LEFT;
-                        break;
-                    case LEFT:
-                        direction = Direction.UP;
-                        break;
-                }
+        if (isActionUp(motionEvent)) {
+            if (isRightOrLeftScreenSide(motionEvent)) {
+                changeDirection(false);
+                performClick();
             } else {
-                switch (direction) {
-                    case UP:
-                        direction = Direction.LEFT;
-                        break;
-                    case LEFT:
-                        direction = Direction.DOWN;
-                        break;
-                    case DOWN:
-                        direction = Direction.RIGHT;
-                        break;
-                    case RIGHT:
-                        direction = Direction.UP;
-                        break;
-                }
+                changeDirection(true);
+                performClick();
             }
         }
         return true;
     }
 
+    private boolean isRightOrLeftScreenSide(MotionEvent motionEvent) {
+        return motionEvent.getX() >= screenX / 2f;
+    }
+
+    private boolean isActionUp(MotionEvent motionEvent) {
+        return (motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP;
+    }
+
+    private void changeDirection(boolean isPrev) {
+        List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.values()));
+
+        direction = isPrev ? directions
+                .get((directions.indexOf(direction) + 1) % directions.size())
+                : directions
+                .get((directions.indexOf(direction) - 1 + directions.size()) % directions.size());
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
 }

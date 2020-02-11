@@ -30,9 +30,9 @@ public class GameService {
         if (!snakeService.hasLost()) {
             snakeService.updateSnakeSituation(direction);
         } else {
+            snakeService.makeDeathSound();
             throw new GameLostException(YOU_LOST);
         }
     }
-
 
 }
