@@ -23,7 +23,7 @@ import java.util.Random;
 
 public class SnakeEngine extends SurfaceView implements Runnable {
 
-    private static final String IMG_PUFFERFISH_PNG = "img/Pufferfish.png";
+    private static final String IMG_PUFFER_FISH_PNG = "img/PufferFish.png";
     private static final String IMG_CARROT_PNG = "img/IconCarrot.png";
     private static final String IMG_POWDER_PNG = "img/Powder.png";
     private static final String SCORE = "Score:";
@@ -39,7 +39,7 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     private final long MILLIS_PER_SECOND = 1000;
     private long nextFrameTime;
 
-    private final int NUM_BLOCKS_WIDE = 20;
+    private final int NUM_BLOCKS_WIDE = 14;
     private int screenX;
     private int screenY;
     private int numBlocksHigh;
@@ -188,7 +188,7 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         ArrayList snakeBody = new ArrayList<>(Arrays
                 .asList(snakeService.getSnake().getSnakeBody().toArray()));
 
-        Bitmap snakeHeadBitmap = getBitmapByFileName(IMG_PUFFERFISH_PNG);
+        Bitmap snakeHeadBitmap = getBitmapByFileName(IMG_PUFFER_FISH_PNG);
         Bitmap snakeBodyBitmap = getBitmapByFileName(IMG_POWDER_PNG);
 
         for (int i = 0; i < snake.getSize(); i++) {
