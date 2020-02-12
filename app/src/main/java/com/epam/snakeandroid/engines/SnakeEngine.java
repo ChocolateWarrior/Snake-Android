@@ -59,7 +59,12 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SnakeEngine(Context context, Point size) {
         super(context);
+        init(size);
+        startNewGame();
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void init(Point size) {
         screenX = size.x;
         screenY = size.y;
 
@@ -76,8 +81,6 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         soulService = new SoulService(random, field, snake);
         snakeService = new SnakeService(soulService, soundPool, getContext(), field, snake);
         gameService = new GameService(snakeService, soulService);
-
-        startNewGame();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
