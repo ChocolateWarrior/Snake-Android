@@ -8,7 +8,7 @@ public class Field {
     private int sizeX;
     private int sizeY;
     private List<Node> nodeField;
-    private Soul soul;
+    private Carrot carrot;
 
     public Field(int sizeX, int sizeY) {
         this.sizeX = sizeX;
@@ -24,12 +24,12 @@ public class Field {
         return sizeY;
     }
 
-    public Soul getSoul() {
-        return soul;
+    public Carrot getCarrot() {
+        return carrot;
     }
 
-    public void setSoul(Soul soul) {
-        this.soul = soul;
+    public void setCarrot(Carrot carrot) {
+        this.carrot = carrot;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Field {
                 "sizeX=" + sizeX +
                 ", sizeY=" + sizeY +
                 ", nodeField=" + nodeField +
-                ", soul=" + soul +
+                ", carrot=" + carrot +
                 '}';
     }
 }

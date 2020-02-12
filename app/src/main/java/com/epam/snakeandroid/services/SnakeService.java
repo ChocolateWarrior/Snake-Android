@@ -16,7 +16,9 @@ import java.util.Deque;
 
 public class SnakeService {
 
-    private SoulService soulService;
+    private static final String SOUND_EAT = "sound/eat.ogg";
+    private static final String SOUND_DEATH = "sound/ah.ogg";
+    private CarrotService carrotService;
     private SoundPool soundPool;
     private Field field;
     private Snake snake;
@@ -25,12 +27,12 @@ public class SnakeService {
     private int deathSound;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public SnakeService(SoulService soulService,
+    public SnakeService(CarrotService carrotService,
                         SoundPool soundPool,
                         Context context,
                         Field field,
                         Snake snake) {
-        this.soulService = soulService;
+        this.carrotService = carrotService;
         this.soundPool = soundPool;
         this.field = field;
         this.snake = snake;
@@ -39,10 +41,10 @@ public class SnakeService {
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
 
-            descriptor = assetManager.openFd("sound/eat.ogg");
+            descriptor = assetManager.openFd(SOUND_EAT);
             eatSound = soundPool.load(descriptor, 0);
 
-            descriptor = assetManager.openFd("sound/ah.ogg");
+            descriptor = assetManager.openFd(SOUND_DEATH);
             deathSound = soundPool.load(descriptor, 0);
 
         } catch (IOException e) {
@@ -82,11 +84,11 @@ public class SnakeService {
     }
 
     private void eatSpriteIfPossible() {
-        if (snake.getHead().equals(field.getSoul().getPosition())) {
+        if (snake.getHead().equals(field.getCarrot().getPosition())) {
             makeSound(eatSound);
             growSnake();
             score++;
-            soulService.spawnNewSoul();
+            carrotService.spawnNewCarrot();
         }
     }
 

@@ -1,9 +1,9 @@
 package com.epam.snakeandroid.entities;
 
-public class Soul {
+public class Carrot {
     private Node position;
 
-    public Soul(Node position) {
+    public Carrot(Node position) {
         this.position = position;
     }
 

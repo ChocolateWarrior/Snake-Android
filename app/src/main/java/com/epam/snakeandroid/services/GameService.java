@@ -9,19 +9,19 @@ public class GameService {
 
     private static final String YOU_LOST = "You lost!";
     private SnakeService snakeService;
-    private SoulService soulService;
+    private CarrotService carrotService;
 
     public GameService(SnakeService snakeService,
-                       SoulService soulService) {
+                       CarrotService carrotService) {
         this.snakeService = snakeService;
-        this.soulService = soulService;
+        this.carrotService = carrotService;
     }
 
     @Override
     public String toString() {
         return "GameService{" +
                 " snakeService=" + snakeService +
-                ", soulService=" + soulService +
+                ", carrotService=" + carrotService +
                 '}';
     }
 
